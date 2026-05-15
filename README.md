@@ -103,7 +103,7 @@ by schema ownership. This is justified by three factors:
 
 ## Database Documentation
 
-See [database/README.md](./database/README.md) — maintained by [@daniquinto]
+See [database/README.md](./database/README.md) 
 
 Covers: schema overview, core tables, supporting tables, indexes, migrations,
 and seed data.
