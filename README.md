@@ -23,7 +23,7 @@ API Gateway and an asynchronous message broker.
 |----------------|-------------------------------------|
 | Frontends      | Blazor WASM PWA · Laravel Livewire  |
 | API Gateway    | YARP (.NET 9)                       |
-| Services       | .NET 9 · Laravel 12                 |
+| Services       | .NET 9 · Laravel 13                 |
 | Database       | PostgreSQL (single DB)              |
 | Cache & Locks  | Redis                               |
 | Messaging      | RabbitMQ                            |
