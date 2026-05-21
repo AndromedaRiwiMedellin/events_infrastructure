@@ -1,8 +1,8 @@
 # Andromeda — Architecture Documentation
 
-Ticketing and event management platform built on a microservices architecture.
-Each application is independently deployed and communicates through a central
-API Gateway and an asynchronous message broker.
+Ticketing and event management platform built on a modular distributed architecture.
+
+Each client application and backend service can be independently deployed and communicates through a central API Gateway and an asynchronous message broker.
 
 ---
 
@@ -21,9 +21,9 @@ API Gateway and an asynchronous message broker.
 
 | Layer          | Technology                          |
 |----------------|-------------------------------------|
-| Frontends      | Blazor WASM PWA · Laravel Livewire  |
+| Frontends      | React · Laravel Livewire            |
 | API Gateway    | YARP (.NET 9)                       |
-| Services       | .NET 9 · Laravel 13                 |
+| Services       | ASP.NET Core 9 · Laravel 13         |
 | Database       | PostgreSQL (single DB)              |
 | Cache & Locks  | Redis                               |
 | Messaging      | RabbitMQ                            |
@@ -34,12 +34,12 @@ API Gateway and an asynchronous message broker.
 
 ## Applications
 
-| App        | Domain                               | Technology          | Team     |
-|------------|--------------------------------------|---------------------|----------|
-| User App   | andromeda.andrescortes.dev           | Blazor WASM PWA     | Alpha    |
-| Admin App  | admin.andromeda.andrescortes.dev     | Laravel + Livewire  | Beta     |
-| POS App    | tickets.andromeda.andrescortes.dev   | Blazor WASM PWA     | Gamma    |
-| Access App | access.andromeda.andrescortes.dev    | Blazor WASM PWA     | Delta    |
+| App        | Domain                               | Technology          |
+|------------|--------------------------------------|---------------------|
+| User App   | andromeda.andrescortes.dev           | React               |
+| Admin App  | admin.andromeda.andrescortes.dev     | Laravel + Livewire  |
+| POS App    | tickets.andromeda.andrescortes.dev   | React               |
+| Access App | access.andromeda.andrescortes.dev    | React               |
 
 ---
 
@@ -51,7 +51,7 @@ Key decisions made during the design phase and the reasoning behind each one.
 |-----------------|------------------------|-----------------------------------------------------------------|
 | API Gateway     | YARP (.NET 9)          | Native .NET ecosystem, no extra container, configurable via `appsettings.json` |
 | Database        | PostgreSQL (single DB) | 3 core entities (`users`, `events`, `tickets`) guide the flow — Redis handles concurrency pressure |
-| Concurrency     | Redis SETNX TTL 720s   | Atomic seat locking without DB-level locks or race conditions   |
+| Concurrency     | Redis   | Atomic seat locking without DB-level locks or race conditions   |
 | Async messaging | RabbitMQ               | Decouples services — if a consumer is down, messages persist and retry (DLQ x3) |
 | Auth tokens     | JWT RS256              | Stateless — validated at gateway level via JWKS, services never call Auth directly |
 | QR tokens       | JWT RS256 (signed)     | Reuses existing RS256 infrastructure, verifiable offline, non-sequential and non-predictable |
@@ -60,7 +60,7 @@ Key decisions made during the design phase and the reasoning behind each one.
 
 ### Why a single database
 
-A common microservices pattern is one database per service. For Andromeda, the
+A common distributed architecture pattern is one database per service. For Andromeda, the
 decision was made to use a single PostgreSQL instance with logical separation
 by schema ownership. This is justified by three factors:
 
@@ -70,9 +70,10 @@ by schema ownership. This is justified by three factors:
 - Redis handles all concurrency-sensitive operations (seat locking, rate
   limiting), so the database is never a bottleneck for high-contention writes.
 - The team size and project scope do not require the operational overhead of
-  managing eight separate database instances.
+  managing multiple database instances.
 
 ---
+
 ## Diagrams
 
 ### System
@@ -103,7 +104,7 @@ by schema ownership. This is justified by three factors:
 
 ## Database Documentation
 
-See [database/README.md](./database/README.md) 
+See [database/README.md](./database/README.md)
 
 Covers: schema overview, core tables, supporting tables, indexes, migrations,
 and seed data.
@@ -112,7 +113,7 @@ and seed data.
 
 ## Repository Structure
 
-```
+```txt
 andromeda-docs/
 │
 ├── README.md
@@ -120,7 +121,7 @@ andromeda-docs/
 ├── architecture/
 │   ├── 01-system-overview.md
 │   ├── 02-yarp-gateway.md
-│   ├── 03-microservices.md
+│   ├── 03-services-architecture.md
 │   ├── 04-redis-strategy.md
 │   └── 05-rabbitmq-messaging.md
 │
@@ -137,4 +138,3 @@ andromeda-docs/
 │
 └── database/
     └── README.md
-```
